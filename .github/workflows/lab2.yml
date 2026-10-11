@@ -1,0 +1,23 @@
+name: Atlas Weekly integration
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        node: [20, 22]
+    services:
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: --health-cmd "false" --health-interval 10s --health-retries 5
+    steps:
+      - run: echo "Testing Node ${{ matrix.node }}"
+  report:
+    needs: integration
+    runs-on: ubuntu-latest
+    steps: [{run: echo complete}]
