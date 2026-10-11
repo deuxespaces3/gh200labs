@@ -1,0 +1,45 @@
+name: Lab 01 - Workflow Triggers
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: Choose environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+      dry_run:
+        description: Dry run only
+        type: boolean
+        default: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inspect event
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
+          TARGET: ${{ inputs.environment_name }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          echo "Event: $EVENT_NAME"
+          echo "Actor: $ACTOR"
+          echo "Target: $TARGET"
+          echo "Dry run: $DRY_RUN"
